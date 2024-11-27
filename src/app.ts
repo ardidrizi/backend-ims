@@ -1,10 +1,16 @@
 import express, { Request, Response } from "express";
+import logger from "morgan";
+import cors from "cors";
 import dotenv from "dotenv";
+import productRouter from "./routes/productRoutes";
 
 // Initialize dotenv for environment variables
 dotenv.config();
 
 const app = express();
+app.use(cors());
+app.use(logger("dev"));
+// origin local host
 
 // Middleware for parsing JSON
 app.use(express.json());
@@ -14,9 +20,7 @@ app.get("/", (req: Request, res: Response) => {
   res.send("Backend is up and running!");
 });
 
-// Import routes
-import productRoutes from "./routes/productRoutes";
-productRoutes.use("/api", productRoutes);
+app.use("/api", productRouter);
 
 // Start the server
 const PORT = process.env.PORT || 5000;

@@ -32,6 +32,7 @@ export const addProduct = async (
   req: Request<{}, {}, AddProductRequestBody>, // Using a body type for explicit structure
   res: Response
 ): Promise<void> => {
+  console.log(req.body);
   const { name, price, supplierId } = req.body;
 
   // Validate the input fields
