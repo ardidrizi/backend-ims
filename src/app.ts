@@ -3,6 +3,7 @@ import logger from "morgan";
 import cors from "cors";
 import dotenv from "dotenv";
 import productRouter from "./routes/productRoutes";
+import supplierRouter from "./routes/supplierRoutes";
 
 // Initialize dotenv for environment variables
 dotenv.config();
@@ -20,6 +21,7 @@ app.get("/", (req: Request, res: Response) => {
   res.send("Backend is up and running!");
 });
 
+app.use("/api", supplierRouter);
 app.use("/api", productRouter);
 
 // Start the server

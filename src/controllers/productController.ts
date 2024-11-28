@@ -97,6 +97,55 @@ export const getProductById = async (
   }
 };
 
+export const updateProduct = async (
+  req: Request<{ id: string }, {}, AddProductRequestBody>, // Type the ID param as a string and the request body
+  res: Response
+): Promise<void> => {
+  const { id } = req.params; // Get the product ID from the request parameters
+  const productId = parseInt(id);
+  const { name, price, supplierId } = req.body;
+
+  if (isNaN(productId)) {
+    res.status(400).json({ error: "Invalid product ID" });
+    return;
+  }
+
+  if (!name || !price || !supplierId) {
+    res.status(400).json({ error: "Name, price, and supplierId are required" });
+    return;
+  }
+
+  if (isNaN(price) || price <= 0) {
+    res.status(400).json({ error: "Price must be a positive number" });
+    return;
+  }
+
+  try {
+    // Update the product in the database
+    const product = await prisma.product.update({
+      where: { id: productId }, // Ensure the id is parsed as an integer
+      data: {
+        name,
+        price,
+        supplierId,
+      },
+    });
+
+    // If the product was updated, send the updated product as the response
+    res.json(product);
+  } catch (error: unknown) {
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2025"
+    ) {
+      // Prisma error code for not found record
+      res.status(404).json({ error: "Product not found" });
+      return;
+    }
+    handleError(error, res, "Error updating product");
+  }
+};
+
 export const deleteProduct = async (
   req: Request<{ id: string }>, // Type the ID param as a string
   res: Response
