@@ -15,7 +15,7 @@ export const createStockMovement = async (req: Request, res: Response) => {
     });
     res.status(201).json(stockMovement);
   } catch (error) {
-    console.error("Error creating stock movement:", error);
+    // console.error("Error creating stock movement:", error);
     res
       .status(500)
       .json({ error: "An error occurred", details: (error as Error).message });
@@ -43,7 +43,7 @@ export const getStockMovements = async (req: Request, res: Response) => {
 
     res.status(200).json(validStockMovements);
   } catch (error) {
-    console.error("Error fetching stock movements:", error);
+    // console.error("Error fetching stock movements:", error);
     res
       .status(500)
       .json({ error: "An error occurred", details: (error as Error).message });
@@ -62,7 +62,7 @@ export const getStockMovementById = async (req: Request, res: Response) => {
     // }
     res.status(200).json(stockMovement);
   } catch (error) {
-    console.error("Error fetching stock movement:", error);
+    // console.error("Error fetching stock movement:", error);
     res
       .status(500)
       .json({ error: "An error occurred", details: (error as Error).message });
@@ -84,7 +84,7 @@ export const updateStockMovement = async (req: Request, res: Response) => {
     });
     res.status(200).json(stockMovement);
   } catch (error) {
-    console.error("Error updating stock movement:", error);
+    // console.error("Error updating stock movement:", error);
     res
       .status(500)
       .json({ error: "An error occurred", details: (error as Error).message });
@@ -100,7 +100,6 @@ export const deleteStockMovement = async (req: Request, res: Response) => {
     });
     res.status(204).send();
   } catch (error) {
-    console.error("Error deleting stock movement:", error);
     res
       .status(500)
       .json({ error: "An error occurred", details: (error as Error).message });
