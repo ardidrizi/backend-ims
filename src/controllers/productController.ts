@@ -9,6 +9,7 @@ interface AddProductRequestBody {
   name: string;
   price: number;
   supplierId: number;
+  categoryId: number;
 }
 
 export const getAllProducts = async (
@@ -53,9 +54,10 @@ export const addProduct = async (
         name,
         price,
         sku: "default-sku", // You can generate this dynamically if needed
-        category: "default-category", // Default category if not provided
         quantity: 0, // Default quantity
         supplierId,
+        categoryId: 1, // Default category ID
+        expiration: new Date(), // Default expiration date
       },
     });
 

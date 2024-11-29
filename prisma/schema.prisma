@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -17,14 +11,24 @@ model Product {
   id            Int             @id @default(autoincrement())
   name          String
   sku           String          @unique
-  category      String
+  expiration    DateTime
+  categoryId    Int             @default(1)
   price         Float
   quantity      Int
   supplierId    Int
-  supplier      Supplier        @relation(fields: [supplierId], references: [id])
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
+  category      Category        @relation(fields: [categoryId], references: [id])
+  supplier      Supplier        @relation(fields: [supplierId], references: [id])
   StockMovement StockMovement[]
+}
+
+model Category {
+  id        Int       @id @default(autoincrement())
+  name      String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  products  Product[]
 }
 
 model Supplier {
@@ -34,16 +38,16 @@ model Supplier {
   email       String
   phone       String
   address     String
-  products    Product[] @relation
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+  products    Product[]
 }
 
 model StockMovement {
   id              Int      @id @default(autoincrement())
   productId       Int
-  product         Product  @relation(fields: [productId], references: [id])
   quantityChanged Int
   type            String
   date            DateTime @default(now())
+  product         Product  @relation(fields: [productId], references: [id])
 }
