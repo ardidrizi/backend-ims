@@ -1,25 +1,23 @@
 import express from "express";
 import {
-  loginUser,
-  signupUser,
-  getUsers,
-  getUserById,
+  getUser,
   createUser,
-  updateUser,
-  deleteUser,
+  getUserById,
+  updateUserById,
+  deleteUserById,
 } from "../controllers/userController";
 
 const router = express.Router();
 
 // User CRUD routes
-router.get("/users", getUsers);
+router.get("/users", getUser);
 router.get("/users/:id", getUserById);
 router.post("/users", createUser);
-router.put("/users/:id", updateUser);
-router.delete("/users/:id", deleteUser);
+router.put("/users/:id", updateUserById);
+router.delete("/users/:id", deleteUserById);
 
 // Authentication routes
-router.post("/login", loginUser);
-router.post("/signup", signupUser);
+// router.post("/login", loginUser);
+// router.post("/signup", signupUser);
 
 export default router;

@@ -6,6 +6,7 @@ import productRouter from "./routes/productRoutes";
 import supplierRouter from "./routes/supplierRoutes";
 import stockMovementRouter from "./routes/stockMovementRoutes";
 import categoryRouter from "./routes/categoryRoutes";
+import userRouter from "./routes/userRoutes";
 
 // Initialize dotenv for environment variables
 dotenv.config();
@@ -23,6 +24,7 @@ app.get("/", (req: Request, res: Response) => {
   res.send("Backend is up and running!");
 });
 
+app.use("/api", userRouter);
 app.use("/api", categoryRouter);
 app.use("/api", stockMovementRouter);
 app.use("/api", supplierRouter);

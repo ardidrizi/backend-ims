@@ -3,78 +3,70 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-// Get all users
-export const getUsers = async (req: Request, res: Response) => {
+// Create a new user
+export const createUser = async (req: Request, res: Response) => {
   try {
-    const users = await prisma.user.findMany();
-    res.status(200).json(users);
+    const user = await prisma.user.create({
+      data: req.body,
+    });
+    res.status(201).send(user);
   } catch (error) {
-    res.status(500).json({ message: (error as Error).message });
+    res.status(400).send(error);
   }
 };
 
-// Get user by ID
+// Get all users
+export const getUser = async (req: Request, res: Response) => {
+  try {
+    const users = await prisma.user.findMany();
+    res.send(users);
+  } catch (error) {
+    res.status(500).send;
+  }
+};
+
+// Get a user by ID
 export const getUserById = async (req: Request, res: Response) => {
   try {
     const user = await prisma.user.findUnique({
       where: { id: Number(req.params.id) },
     });
-    // if (!user) return res.status(404).json({ message: "User not found" });
-    res.status(200).json(user);
+    // if (!user) {
+    //   return res.status(404).send();
+    // }
+    res.send(user);
   } catch (error) {
-    res.status(500).json({ message: (error as Error).message });
+    res.status(500).send(error);
   }
 };
 
-// Create new user
-export const createUser = async (req: Request, res: Response) => {
+// Update a user by ID
+export const updateUserById = async (req: Request, res: Response) => {
   try {
-    const newUser = await prisma.user.create({ data: req.body });
-    res.status(201).json(newUser);
-  } catch (error) {
-    res.status(400).json({ message: (error as Error).message });
-  }
-};
-
-// Update user
-export const updateUser = async (req: Request, res: Response) => {
-  try {
-    const updatedUser = await prisma.user.update({
+    const user = await prisma.user.update({
       where: { id: Number(req.params.id) },
       data: req.body,
     });
-    // if (!updatedUser)
-    //   return res.status(404).json({ message: "User not found" });
-    res.status(200).json(updatedUser);
+    // if (!user) {
+    //   return res.status(404).send();
+    // }
+    res.send(user);
   } catch (error) {
-    res.status(400).json({ message: (error as Error).message });
+    res.status(400).send(error);
   }
 };
 
-// Delete user
-export const deleteUser = async (req: Request, res: Response) => {
+// Delete a user by ID
+export const deleteUserById = async (req: Request, res: Response) => {
   try {
-    const deletedUser = await prisma.user.delete({
+    const user = await prisma.user.delete({
       where: { id: Number(req.params.id) },
     });
-    // if (!deletedUser)
-    //   return res.status(404).json({ message: "User not found" });
-    res.status(200).json({ message: "User deleted" });
+    // if (!user) {
+    //   return res.status(404).send();
+    // }
+    res.send(user);
   } catch (error) {
-    res.status(500).json({ message: (error as Error).message });
+    res.status(500).send(error);
   }
-};
-
-// User login
-export const loginUser = async (req: Request, res: Response) => {
-  // ...existing code...
-  // Implement login logic
-  // ...existing code...
-};
-
-// User signup
-export const signupUser = async (req: Request, res: Response) => {
-  // ...existing code...
-  // Implement signup logic
-  // ...existing code...
 };
