@@ -4,7 +4,7 @@ CREATE TABLE "Product" (
     "name" TEXT NOT NULL,
     "sku" TEXT NOT NULL,
     "expiration" TIMESTAMP(3) NOT NULL,
-    "categoryId" INTEGER NOT NULL,
+    "categoryId" INTEGER NOT NULL DEFAULT 1,
     "price" DOUBLE PRECISION NOT NULL,
     "quantity" INTEGER NOT NULL,
     "supplierId" INTEGER NOT NULL,

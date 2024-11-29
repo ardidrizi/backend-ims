@@ -76,7 +76,7 @@ export const getProductById = async (
   const productId = parseInt(id);
 
   if (isNaN(productId)) {
-    res.status(400).json({ error: "Invalid product ID" });
+    res.status(400).json({ error: "Invalid product ID2" });
     return;
   }
 
@@ -108,7 +108,7 @@ export const updateProduct = async (
   const { name, price, supplierId } = req.body;
 
   if (isNaN(productId)) {
-    res.status(400).json({ error: "Invalid product ID" });
+    res.status(400).json({ error: "Invalid product ID3" });
     return;
   }
 
@@ -156,7 +156,7 @@ export const deleteProduct = async (
   const productId = parseInt(id);
 
   if (isNaN(productId)) {
-    res.status(400).json({ error: "Invalid product ID" });
+    res.status(400).json({ error: "Invalid product ID1" });
     return;
   }
 
