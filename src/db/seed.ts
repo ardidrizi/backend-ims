@@ -229,17 +229,23 @@ async function main() {
 
   // Insert Products into the database
   for (const product of products) {
-    await prisma.product.create({
-      data: {
-        name: product.name,
-        sku: product.sku,
-        expiration: product.expiration,
-        price: product.price,
-        categoryId: product.categoryId,
-        supplierId: product.supplierId,
-        quantity: 100, // Set an initial quantity of 100 for each product
-      },
+    const existingProduct = await prisma.product.findFirst({
+      where: { sku: product.sku },
     });
+
+    if (!existingProduct) {
+      await prisma.product.create({
+        data: {
+          name: product.name,
+          sku: product.sku,
+          expiration: product.expiration,
+          price: product.price,
+          categoryId: product.categoryId,
+          supplierId: product.supplierId,
+          quantity: 100, // Set an initial quantity of 100 for each product
+        },
+      });
+    }
   }
 
   console.log("Seed data has been inserted successfully!");

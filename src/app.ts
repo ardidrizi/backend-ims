@@ -12,7 +12,7 @@ import bodyParser from "body-parser";
 // Initialize dotenv for environment variables
 dotenv.config(); // Ensure this line is at the top
 
-const app = express();
+export const app = express();
 app.use(cors());
 app.use(logger("dev"));
 // origin local host
