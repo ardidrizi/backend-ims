@@ -5,6 +5,8 @@ import {
   getUserById,
   updateUserById,
   deleteUserById,
+  loginUser,
+  signupUser,
 } from "../controllers/userController";
 
 const router = express.Router();
@@ -17,7 +19,7 @@ router.put("/users/:id", updateUserById);
 router.delete("/users/:id", deleteUserById);
 
 // Authentication routes
-// router.post("/login", loginUser);
-// router.post("/signup", signupUser);
+router.post("/login", loginUser);
+router.post("/signup", signupUser);
 
 export default router;

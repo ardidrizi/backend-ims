@@ -7,9 +7,10 @@ import supplierRouter from "./routes/supplierRoutes";
 import stockMovementRouter from "./routes/stockMovementRoutes";
 import categoryRouter from "./routes/categoryRoutes";
 import userRouter from "./routes/userRoutes";
+import bodyParser from "body-parser";
 
 // Initialize dotenv for environment variables
-dotenv.config();
+dotenv.config(); // Ensure this line is at the top
 
 const app = express();
 app.use(cors());
@@ -17,7 +18,7 @@ app.use(logger("dev"));
 // origin local host
 
 // Middleware for parsing JSON
-app.use(express.json());
+app.use(bodyParser.json());
 
 // Test route
 app.get("/", (req: Request, res: Response) => {
