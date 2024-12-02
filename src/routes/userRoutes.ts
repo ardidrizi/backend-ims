@@ -1,12 +1,13 @@
 import express from "express";
 import {
-  getUser,
+  loginUser,
+  signupUser,
   createUser,
+  getUser,
   getUserById,
   updateUserById,
   deleteUserById,
-  loginUser,
-  signupUser,
+  adminProtectedRoute,
 } from "../controllers/userController";
 
 const router = express.Router();
@@ -21,5 +22,7 @@ router.delete("/users/:id", deleteUserById);
 // Authentication routes
 router.post("/login", loginUser);
 router.post("/signup", signupUser);
+
+router.get("/admin", adminProtectedRoute);
 
 export default router;

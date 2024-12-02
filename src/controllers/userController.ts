@@ -1,4 +1,5 @@
-import { Request, Response, NextFunction } from "express";
+import express, { Request, Response, NextFunction } from "express";
+import verifyToken from "../middlewares/authMiddleware";
 
 interface LoginRequestBody {
   email: string;
@@ -9,7 +10,8 @@ import { PrismaClient } from "@prisma/client";
 interface SignupRequestBody {
   email: string;
   password: string;
-  name: string;
+  firstName: string; // Updated to include firstName
+  lastName: string; // Updated to include lastName
   isAdmin?: boolean; // Add isAdmin property
 }
 import bcrypt from "bcrypt";
@@ -25,8 +27,18 @@ const prisma = new PrismaClient();
 // Create a new user
 export const createUser = async (req: Request, res: Response) => {
   try {
+    const salt = bcrypt.genSaltSync(saltRounds);
+    const hashedPassword = bcrypt.hashSync(req.body.password, salt);
+
     const user = await prisma.user.create({
-      data: req.body,
+      data: {
+        email: req.body.email,
+        password: hashedPassword, // Hash the password
+        firstName: req.body.firstName, // Updated to include firstName
+        lastName: req.body.lastName, // Updated to include lastName
+        isAdmin: req.body.isAdmin,
+        role: req.body.role,
+      },
     });
     res.status(201).send(user);
   } catch (error) {
@@ -62,9 +74,19 @@ export const getUserById = async (req: Request, res: Response) => {
 // Update a user by ID
 export const updateUserById = async (req: Request, res: Response) => {
   try {
+    const salt = bcrypt.genSaltSync(saltRounds);
+    const hashedPassword = bcrypt.hashSync(req.body.password, salt);
+
     const user = await prisma.user.update({
       where: { id: Number(req.params.id) },
-      data: req.body,
+      data: {
+        email: req.body.email,
+        password: hashedPassword, // Hash the password
+        firstName: req.body.firstName, // Updated to include firstName
+        lastName: req.body.lastName, // Updated to include lastName
+        isAdmin: req.body.isAdmin,
+        role: req.body.role,
+      },
     });
     // if (!user) {
     //   return res.status(404).send();
@@ -115,8 +137,8 @@ export const loginUser = async (
       return;
     }
 
-    const { id, name = "" } = foundUser; // Handle optional name property
-    const payload = { id, email, name };
+    const { id } = foundUser;
+    const payload = { id, email };
 
     const tokenSecret = process.env.TOKEN_SECRET;
     if (!tokenSecret) {
@@ -141,10 +163,12 @@ export const signupUser = async (
   res: Response,
   next: NextFunction
 ): Promise<void> => {
-  const { email, password, name, isAdmin = false } = req.body; // Default isAdmin to false
+  const { email, password, firstName, lastName, isAdmin = false } = req.body; // Updated to include firstName and lastName
 
-  if (!email || !password || !name) {
-    res.status(400).json({ message: "Provide email, password and name" });
+  if (!email || !password || !firstName || !lastName) {
+    res
+      .status(400)
+      .json({ message: "Provide email, password, first name, and last name" });
     return;
   }
 
@@ -177,13 +201,14 @@ export const signupUser = async (
       data: {
         email,
         password: hashedPassword,
-        name,
+        firstName, // Updated to include firstName
+        lastName, // Updated to include lastName
         isAdmin, // Save isAdmin property
       },
     });
 
     const { id } = createdUser;
-    const user = { email, name, id };
+    const user = { email, firstName, lastName, id };
     res.status(201).json({ user });
   } catch (err) {
     console.error(err);
@@ -191,7 +216,14 @@ export const signupUser = async (
   }
 };
 
+const app = express();
+
 // Admin-protected route for testing
 export const adminProtectedRoute = (req: Request, res: Response) => {
   res.status(200).json({ message: "Welcome, Admin!" });
 };
+
+// Example of a protected route
+app.get("/protected-route", verifyToken, (req: Request, res: Response) => {
+  res.status(200).json({ message: "This is a protected route." });
+});
