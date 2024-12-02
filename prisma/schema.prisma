@@ -17,6 +17,7 @@ model User {
   role      String   @default("USER")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  orders    Order[]
 }
 
 enum Role {
@@ -38,6 +39,7 @@ model Product {
   category      Category        @relation(fields: [categoryId], references: [id])
   supplier      Supplier        @relation(fields: [supplierId], references: [id])
   StockMovement StockMovement[]
+  orderItems    OrderItem[]
 }
 
 model Category {
@@ -67,4 +69,37 @@ model StockMovement {
   type            String
   date            DateTime @default(now())
   product         Product  @relation(fields: [productId], references: [id])
+}
+
+model Order {
+  id              Int         @id @default(autoincrement())
+  userId          Int
+  customerName    String
+  orderDate       DateTime    @default(now())
+  totalAmount     Float
+  status          OrderStatus @default(PENDING)
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  shippedAt       DateTime?
+  shippingAddress String
+  billingAddress  String
+  user            User        @relation(fields: [userId], references: [id])
+  orderItems      OrderItem[]
+}
+
+enum OrderStatus {
+  PENDING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+model OrderItem {
+  id        Int     @id @default(autoincrement())
+  orderId   Int
+  productId Int
+  quantity  Int
+  price     Float
+  order     Order   @relation(fields: [orderId], references: [id])
+  product   Product @relation(fields: [productId], references: [id])
 }

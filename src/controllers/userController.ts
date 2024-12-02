@@ -5,7 +5,7 @@ interface LoginRequestBody {
   email: string;
   password: string;
 }
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Prisma } from "@prisma/client";
 
 interface SignupRequestBody {
   email: string;
@@ -40,9 +40,18 @@ export const createUser = async (req: Request, res: Response) => {
         role: req.body.role,
       },
     });
-    res.status(201).send(user);
+    res.status(201).json(user);
   } catch (error) {
-    res.status(400).send(error);
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2002"
+    ) {
+      res
+        .status(409)
+        .send({ error: "Unique constraint failed on the fields: `id`" });
+    } else {
+      res.status(500).send({ error: "Internal server error" });
+    }
   }
 };
 
@@ -120,28 +129,36 @@ export const loginUser = async (
   const { email, password } = req.body;
 
   if (!email || !password) {
+    console.log("Email or password not provided.");
     res.status(400).json({ message: "Provide email and password." });
     return;
   }
 
   try {
+    console.log(`Attempting to find user with email: ${email}`);
     const foundUser = await prisma.user.findUnique({ where: { email } });
     if (!foundUser) {
+      console.log("User not found.");
       res.status(401).json({ message: "User not found." });
       return;
     }
 
+    console.log("User found:", foundUser);
+    console.log("Checking password.");
     const passwordCorrect = bcrypt.compareSync(password, foundUser.password);
     if (!passwordCorrect) {
+      console.log("Password incorrect.");
       res.status(401).json({ message: "Unable to authenticate the user" });
       return;
     }
 
+    console.log("Password correct, generating token.");
     const { id } = foundUser;
     const payload = { id, email };
 
     const tokenSecret = process.env.TOKEN_SECRET;
     if (!tokenSecret) {
+      console.log("TOKEN_SECRET is not defined.");
       throw new Error("TOKEN_SECRET is not defined");
     }
 
@@ -150,9 +167,10 @@ export const loginUser = async (
       expiresIn: "6h",
     });
 
+    console.log("Token generated successfully:", authToken);
     res.status(200).json({ authToken });
   } catch (err) {
-    console.error(err);
+    console.error("Error during authentication:", err);
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
@@ -211,8 +229,16 @@ export const signupUser = async (
     const user = { email, firstName, lastName, id };
     res.status(201).json({ user });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Internal Server Error" });
+    if (
+      err instanceof Prisma.PrismaClientKnownRequestError &&
+      err.code === "P2002"
+    ) {
+      res
+        .status(409)
+        .send({ error: "Unique constraint failed on the fields: `id`" });
+    } else {
+      res.status(500).json({ message: "Internal Server Error" });
+    }
   }
 };
 

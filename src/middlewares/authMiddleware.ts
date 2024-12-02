@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-import { PrismaClient, User } from "@prisma/client";
+import { PrismaClient, User, Prisma } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -47,7 +47,16 @@ const authMiddleware = async (
       res.status(404).send({ error: "User not found." });
     }
   } catch (ex) {
-    next(ex);
+    if (
+      ex instanceof Prisma.PrismaClientKnownRequestError &&
+      ex.code === "P2002"
+    ) {
+      res
+        .status(409)
+        .send({ error: "Unique constraint failed on the fields: `id`" });
+    } else {
+      next(ex);
+    }
   }
 };
 

@@ -6,6 +6,7 @@ import productRouter from "./routes/productRoutes";
 import supplierRouter from "./routes/supplierRoutes";
 import stockMovementRouter from "./routes/stockMovementRoutes";
 import categoryRouter from "./routes/categoryRoutes";
+import orderRouter from "./routes/orderRoutes";
 import userRouter from "./routes/userRoutes";
 import bodyParser from "body-parser";
 
@@ -26,6 +27,7 @@ app.get("/", (req: Request, res: Response) => {
 });
 
 app.use("/api", userRouter);
+app.use("/api", orderRouter);
 app.use("/api", categoryRouter);
 app.use("/api", stockMovementRouter);
 app.use("/api", supplierRouter);

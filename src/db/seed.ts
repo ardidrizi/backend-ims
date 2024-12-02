@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, OrderStatus } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -246,6 +246,94 @@ async function main() {
         },
       });
     }
+  }
+
+  // Ensure user with id 1 exists (assuming you have a User model)
+  const user1 = await prisma.user.findFirst({
+    where: { id: 1 },
+  });
+
+  if (!user1) {
+    await prisma.user.create({
+      data: {
+        id: 1,
+        firstName: "Default",
+        lastName: "User",
+        email: "default@user.com",
+        password: "password", // Ensure to hash passwords in a real application
+      },
+    });
+  }
+
+  // Ensure user with id 2 exists
+  const user2 = await prisma.user.findFirst({
+    where: { id: 2 },
+  });
+
+  if (!user2) {
+    await prisma.user.create({
+      data: {
+        id: 2,
+        firstName: "Second",
+        lastName: "User",
+        email: "second@user.com",
+        password: "password", // Ensure to hash passwords in a real application
+      },
+    });
+  }
+
+  // Create Orders
+  const orders = [
+    {
+      userId: 1,
+      totalAmount: 50.0,
+      status: OrderStatus.PENDING,
+      orderItems: {
+        create: [
+          { productId: 1, quantity: 2, price: 10.0 },
+          { productId: 2, quantity: 1, price: 30.0 },
+        ],
+      },
+    },
+    {
+      userId: 1,
+      totalAmount: 20.0,
+      status: OrderStatus.SHIPPED,
+      orderItems: {
+        create: [{ productId: 3, quantity: 1, price: 20.0 }],
+      },
+    },
+    {
+      userId: 2,
+      totalAmount: 75.0,
+      status: OrderStatus.DELIVERED,
+      orderItems: {
+        create: [
+          { productId: 4, quantity: 3, price: 15.0 },
+          { productId: 5, quantity: 2, price: 30.0 },
+        ],
+      },
+    },
+    {
+      userId: 2,
+      totalAmount: 40.0,
+      status: OrderStatus.CANCELLED,
+      orderItems: {
+        create: [{ productId: 6, quantity: 4, price: 10.0 }],
+      },
+    },
+  ];
+
+  // Insert Orders into the database
+  for (const order of orders) {
+    await prisma.order.create({
+      data: {
+        ...order,
+        shippingAddress: "Default Shipping Address",
+        billingAddress: "Default Billing Address",
+        customerName: "Default Customer", // Add the required customerName property
+      },
+    });
   }
 
   console.log("Seed data has been inserted successfully!");
