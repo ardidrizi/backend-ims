@@ -3,8 +3,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")   // pooler (6543)
+  directUrl = env("DIRECT_URL")     // direct DB (5432)
 }
 
 model User {
@@ -44,7 +45,7 @@ model Product {
 
 model Category {
   id        Int       @id @default(autoincrement())
-  name      String
+  name      String    @unique
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   products  Product[]
